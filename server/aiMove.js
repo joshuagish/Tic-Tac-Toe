@@ -7,7 +7,7 @@ module.exports = (board) => {
   findMoves(helpers.copyBoard(board), 'X')
   let oRes = findBestMove(possibleMoves.O, board)
   let xRes = findBestMove(possibleMoves.X, board)
-  return oRes.moves < xRes.moves ? oRes : xRes
+  return oRes.moves <= xRes.moves ? oRes : xRes
 }
 
 function findMoves (board, letter, moves = 1) {
