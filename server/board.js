@@ -1,61 +1,52 @@
-const aiMove = require('./aiMove')
-const helpers = require('./helpers')
+import aiMove from './aiMove.js'
+import { checkForWin, flipCoin, openLocation, randomLocation } from './helpers.js'
 
-let socket
+let socketEmitter
 let boards = []
 
-module.exports = {
-  newBoard,
-  getBoard,
-  setMove,
-  initSocket
-}
+export const getBoard = (id) => boards[id]
 
-function getBoard (id) {
-  return boards[id]
-}
-
-function newBoard (id) {
-  let boardId = id !== undefined ? id : boards.length
+export const newBoard = (id) => {
+  const boardId = id ?? boards.length
   boards[boardId] = [
     [[], [], []],
     [[], [], []],
-    [[], [], []]
+    [[], [], []],
   ]
 
   // Randomly let the computer go first
-  if (helpers.flipCoin()) {
-    let loc = helpers.randomLocation()
+  if (flipCoin()) {
+    const loc = randomLocation()
     boards[boardId][loc.row][loc.col] = 'O'
   }
 
   return boardId
 }
 
-function setMove (uid, boardId, row, col) {
-  let board = boards[boardId]
+export const setMove = (userId, boardId, row, col) => {
+  const board = boards[boardId]
   if (!board[row][col].length) {
     board[row][col] = 'X'
-    if (helpers.checkForWin('X', board, row, col)) {
-      socket.emit(uid + '_stat', 'player')
+
+    if (checkForWin('X', board, row, col)) {
+      socketEmitter(userId, 'stat', 'player')
     } else {
-      let movesLeft = helpers.openLocation(board)
+      const movesLeft = openLocation(board)
       if (movesLeft) {
-        let move = aiMove(board)
+        const move = aiMove(board)
         board[move.row][move.col] = 'O'
-        if (helpers.checkForWin('O', board, move.row, move.col)) {
-          socket.emit(uid + '_stat', 'computer')
-        } else if (!helpers.openLocation(board)) {
-          socket.emit(uid + '_stat', 'tie')
+        if (checkForWin('O', board, move.row, move.col)) {
+          socketEmitter(userId, 'stat', 'computer')
+        } else if (!openLocation(board)) {
+          socketEmitter(userId, 'stat', 'tie')
         }
       } else {
-        socket.emit(uid + '_stat', 'tie')
+        socketEmitter(userId, 'stat', 'tie')
       }
     }
   }
 }
 
-function initSocket (socketio) {
-  socket = socketio
+export const setEmitter = (emitter) => {
+  socketEmitter = emitter
 }
-

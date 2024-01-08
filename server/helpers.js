@@ -1,69 +1,69 @@
-module.exports = {
-  copyBoard,
-  checkForWin,
-  flipCoin,
-  randomLocation,
-  openLocation
-}
+export const flipCoin = () => Math.random() < 0.5
 
-function flipCoin () {
-  return Math.random() < 0.5
-}
-
-function randomLocation () {
+export const randomLocation = () => {
   return {
     row: ~~(Math.random() * 3),
     col: ~~(Math.random() * 3)
   }
 }
 
-function openLocation (board) {
-  for (var i = 0; i < board.length; i++) {
-    for (var j = 0; j < board[i].length; j++) {
-      if (!board[i][j].length) return {row: i, col: j, moves: 3}
+export const openLocation = (board) => {
+  let location
+  traverseBoard(board, (cell, row, col) => {
+    if (!location && !cell.length) {
+      location = { row, col, moves: 3 }
     }
-  }
+  })
+  return location
 }
 
-function checkForWin (letter, board, row, col) {
+export const checkForWin = (letter, board, row, col) => {
   // check for diagonal win
   if (board[1][1] === letter && checkDiagonal(letter, board) ||
-      board[1][1] === letter && checkDiagonal(letter, rotateBoard(board))) {
+    board[1][1] === letter && checkDiagonal(letter, rotateBoard(board))) {
     return true
   }
   // check for horizontal, vertical win
   if (checkHorizontal(letter, board, row) ||
-      checkHorizontal(letter, rotateBoard(board), col)) {
+    checkHorizontal(letter, rotateBoard(board), col)) {
     return true
   }
   return false
 }
 
-function copyBoard (board) {
-  let result = []
+export const copyBoard = (board) => {
+  const result = []
   board.forEach((row) => result.push(row.slice()))
   return result
 }
 
-function rotateBoard (board) {
-  let result = []
-  let boardCopy = copyBoard(board)
+export const rotateBoard = (board) => {
+  const result = []
+  const boardCopy = copyBoard(board);
 
-  for (var i = 0; i < 3; i++) {
+  [...new Array(3)].forEach(() => {
     result.push(boardCopy.map(row => { return row.shift() }).reverse())
-  }
+  })
+
   return result
 }
 
-function checkDiagonal (letter, board) {
+export const checkDiagonal = (letter, board) => {
   return board[0][0] === letter &&
     board[1][1] === letter &&
     board[2][2] === letter
 }
 
-function checkHorizontal (letter, board, row) {
+export const checkHorizontal = (letter, board, row) => {
   return board[row][0] === letter &&
     board[row][1] === letter &&
     board[row][2] === letter
 }
 
+export const traverseBoard = (board, callback) => {
+  for (const [rowIndex, row] of board.entries()) {
+    for (const [cellIndex, cell] of row.entries()) {
+      callback(cell, rowIndex, cellIndex)
+    }
+  }
+}

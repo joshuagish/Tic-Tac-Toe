@@ -1,7 +1,7 @@
-# Tic Tac Toe - [Demo](https://recursive-tic-tac-toe.herokuapp.com/)
+# Tic Tac Toe - [Demo](https://joshuagish.com/portfolio/tic-tac-toe/)
 ___
 
-[![ScreenShot](http://joshuagish.com/other/dev/tictactoe/tictactoepreview.png)](https://recursive-tic-tac-toe.herokuapp.com/)
+[![ScreenShot](http://joshuagish.com/other/dev/tictactoe/tictactoepreview.png)](https://joshuagish.com/portfolio/tic-tac-toe/)
 
 
 #### Technologies
@@ -14,15 +14,15 @@ ___
 
 Install Dependencies
 ```sh
-$ yarn install
+$ yarn
 ```
 
-Start webpack
+Start client
 ```sh
-$ webpack --watch
+$ yarn start
 ```
 
-Open a new tab and start node
+Open a new terminal and start the server
 ```sh
-$ yarn nodemon
+$ yarn server
 ```

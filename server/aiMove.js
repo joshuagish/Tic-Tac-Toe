@@ -1,56 +1,52 @@
-const helpers = require('./helpers')
-let possibleMoves
+import { copyBoard, checkForWin, openLocation, traverseBoard } from './helpers.js'
 
-module.exports = (board) => {
-  initMoves()
-  findMoves(helpers.copyBoard(board), 'O')
-  findMoves(helpers.copyBoard(board), 'X')
-  let oRes = findBestMove(possibleMoves.O, board)
-  let xRes = findBestMove(possibleMoves.X, board)
+export default (board) => {
+  const oWinningMoves = findWinningMoves(board, 'O')
+  const xWinningMOves = findWinningMoves(board, 'X')
+  const oRes = findBestMove(oWinningMoves, board)
+  const xRes = findBestMove(xWinningMOves, board)
   return oRes.moves <= xRes.moves ? oRes : xRes
 }
 
-function findMoves (board, letter, moves = 1) {
-  if (moves > 3) return
+function findWinningMoves (board, letter) {
+  const possibleMoves = { 1: [], 2: [], 3: [] }
 
-  for (var i = 0; i < board.length; i++) {
-    for (var j = 0; j < board[i].length; j++) {
-      if (!board[i][j].length) {
-        let tmpBoard = helpers.copyBoard(board)
-        tmpBoard[i][j] = letter
-        let won = helpers.checkForWin(letter, tmpBoard, i, j)
+  const findWinningMove = (board, moves = 1) => {
+    if (moves > 3) return
+
+    traverseBoard(board, (cell, row, col) => {
+      if (!cell.length) {
+        const tmpBoard = copyBoard(board)
+        tmpBoard[row][col] = letter
+        const won = checkForWin(letter, tmpBoard, row, col)
         if (won) {
-          possibleMoves[letter][moves].push(i + '.' + j)
+          possibleMoves[moves].push(row + '.' + col)
         } else {
-          findMoves(tmpBoard, letter, moves + 1)
+          findWinningMove(tmpBoard, moves + 1)
         }
       }
-    }
+    })
   }
+  findWinningMove(copyBoard(board))
+
+  return possibleMoves
 }
 
 function findBestMove (score, board) {
-  let moves = score['1'].length ? 1 : score['2'].length ? 2 : 3
-  let best = score[moves]
+  const moves = score['1'].length ? 1 : score['2'].length ? 2 : 3
+  const best = score[moves]
 
-  let options = {}
+  const options = {}
   best.forEach((coordinate) => {
     if (options[coordinate]) options[coordinate]++
     else options[coordinate] = 1
   })
 
-  var highest = 0
-  var res
-  for (var key in options) {
+  let highest = 0
+  let res
+  for (const key in options) {
     if (options[key] > highest) highest = options[key]
     res = key.split('.')
   }
-  return res ? {row: res[0], col: res[1], moves: moves} : helpers.openLocation(board)
-}
-
-function initMoves () {
-  possibleMoves = {
-    X: {1: [], 2: [], 3: []},
-    O: {1: [], 2: [], 3: []}
-  }
+  return res ? {row: res[0], col: res[1], moves: moves} : openLocation(board)
 }

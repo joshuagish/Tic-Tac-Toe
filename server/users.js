@@ -1,18 +1,11 @@
-const uid = require('uid')
+import { uid } from 'uid'
 
-var users = {}
+const users = {}
 
-const getBoardId = (id) => {
-  return users[id]
-}
+export const getBoardId = (id) => users[id]
 
-const newUser = (boardId) => {
-  let userId = uid(10)
+export const newUser = (boardId) => {
+  const userId = uid(10)
   users[userId] = boardId
   return userId
-}
-
-module.exports = {
-  newUser,
-  getBoardId
 }
